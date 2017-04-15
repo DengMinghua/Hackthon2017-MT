@@ -53,6 +53,9 @@ app.post('/uploading', function(req, res){
     } else {
       var inputFile = files.file[0];
       var uploadedPath = inputFile.path;
+      console.log(inputFile)
+      res.write('hhhh');
+      res.end('hhhhh');
       var dstPath = './files/food.jpg';
       //重命名为真实文件名
       fs.rename(uploadedPath, dstPath, function(err) {

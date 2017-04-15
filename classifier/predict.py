@@ -9,8 +9,8 @@ from keras.layers import Convolution2D, MaxPooling2D
 from keras.utils import np_utils
 from keras.optimizers import Adam
 from keras.models import model_from_json
-model = model_from_json(open('architecture.json').read())
-model.load_weights('weight.h5')
+model = model_from_json(open('./architecture.json').read())
+model.load_weights('./weight.h5')
 
 print("load ok")
 
