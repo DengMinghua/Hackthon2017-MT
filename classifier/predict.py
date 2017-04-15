@@ -9,13 +9,14 @@ from keras.layers import Convolution2D, MaxPooling2D
 from keras.utils import np_utils
 from keras.optimizers import Adam
 from keras.models import model_from_json
-model = model_from_json(open('architecture.json').read())
-model.load_weights('weight.h5')
+model = model_from_json(open('./architecture.json').read())
+model.load_weights('./weight.h5')
 
 print("load ok")
 
 def predicate(filename):
 	pic = Image.open(filename)
+	pic = hist.hist_b(pic)
 	pic = pic.resize((128, 128))
 	pic_gray = pic.convert('L')
 	pic_gray = np.array(pic_gray)
