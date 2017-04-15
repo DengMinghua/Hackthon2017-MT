@@ -84,12 +84,14 @@ var python = exec('python ' + fileName , function(err, stdout, stdin) {
 app.post('/uploading', function(req, res){
   //生成multiparty对象，并配置上传目标路径
   var form = new multiparty.Form({uploadDir: './files/'});
+  form.maxFilesSize = 1024 * 1024 * 1024;
   python.stdout.on('data', function(data) {
     console.log(data.toString());
-    res.write(JSON.stringify(foodData.data[+data.toString()]));
+    res.write(data.toString());
     res.end();
     python.stdout.removeAllListeners('data');
   })
+
 
   //上传完成后处理
   form.parse(req, function(err, fields, files) {
