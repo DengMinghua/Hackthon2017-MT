@@ -92,12 +92,12 @@ app.post('/file', function(req, res) {
   res.end();
 })
 
-// var python = exec('python ' + fileName , function(err, stdout, stdin) {
-//   if (err) {
-//     console.log(err)
-//     return;
-//   }
-// })
+var python = exec('python ' + fileName , function(err, stdout, stdin) {
+  if (err) {
+    console.log(err)
+    return;
+  }
+})
 
 
 
@@ -105,12 +105,13 @@ app.post('/file', function(req, res) {
 app.post('/uploading', function(req, res){
   //生成multiparty对象，并配置上传目标路径
   var form = new multiparty.Form({uploadDir: './files/'});
-  // python.stdout.on('data', function(data) {
-  //   console.log(data.toString());
-  //   res.write('hello, result is ' + data.toString() + '\n');
-  //   res.end();
-  //   python.stdout.removeAllListeners('data');
-  // })
+  from.maxFilesSize = 1024 * 1024 * 1024;
+  python.stdout.on('data', function(data) {
+    console.log(data.toString());
+    res.write('hello, result is ' + data.toString() + '\n');
+    res.end();
+    python.stdout.removeAllListeners('data');
+  })
 
   //上传完成后处理
   form.parse(req, function(err, fields, files) {
@@ -121,14 +122,14 @@ app.post('/uploading', function(req, res){
     } else {
       var inputFile = files.file[0];
       var uploadedPath = inputFile.path;
-      console.log(inputFile)
-      res.write('hhhh');
-      res.end('hhhhh');
+      // console.log(inputFile)
+      // res.write('hhhh');
+      // res.end('hhhhh');
       var dstPath = './files/food.jpg';
       //重命名为真实文件名
       fs.rename(uploadedPath, dstPath, function(err) {
         console.log('successful')
-        // python.stdin.write('./files/food.jpg \n');
+        python.stdin.write('./files/food.jpg \n');
       });
 
     }
