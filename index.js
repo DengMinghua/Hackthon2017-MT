@@ -9,7 +9,7 @@ var bodyParser = require('body-parser')
 var fileName = './classifier/predict.py'
 var spawn = require('child_process').spawn;
 
-var data = {
+var foodData = {
   data: [
     {   
       "name": "虾饺Har gow",
@@ -19,17 +19,6 @@ var data = {
         "趁面热开始擀皮。",
         "虾仁除去泥线，虾仁切碎，少加一些肥的肉，加入、糖、盐、黑胡椒粉、油。",
         "面皮包上馅料，下锅蒸5分钟。",
-      ]
-    },
-    {   
-      "name": "烧卖 sumai",
-      "info": "又称烧麦、肖米、稍麦、稍梅、烧梅、鬼蓬头。形容顶端蓬松束折如花的形状，是一种以烫面为皮裹馅、上笼蒸熟的面食小吃。",
-      "steps": [
-        "糯米泡一夜，蒸熟。",
-        "把肉、香菇、鲜笋切丁，腌制半小时。",
-        "点火，倒油，抄三丁。",
-        "把蒸熟的糯米到入锅里搅拌均匀。",
-        "包上烧卖的面皮，蒸上5min。"
       ]
     },
     {   
@@ -51,7 +40,7 @@ var data = {
         "将蛋挞水倒入蛋挞皮内，不要倒满，防止加热时溢出。",
         "放入烤箱内(200℃)，烤20分钟左右。"
       ]
-    },
+    }, 
     {   
       "name": "糯米鸡 nuomaigai",
       "info": "糯米雞是源自廣東的一種點心.。製法是以荷葉包著糯米，中央放雞肉、叉燒肉、咸蛋黃、冬菇等餡料。糯米雞除用荷葉，粽葉包外，還有不同，糯米雞用蒸具蒸熟，粽子用水煮熟的。吃起來糯米雞的米飯較軟綿，粽的米飯稍硬一些。",
@@ -62,21 +51,11 @@ var data = {
         "蛋煮熟切块",
         "一层糯米，一层馅料，一层糯米，压实裹好"
       ]
-    },
-    {
-      name: '凤爪 phoenix claw',
-      info: '又称鸡掌，鸡爪，凤足等。多皮、筋，胶质丰富。色泽绛红，皮层胀大而有皱纹，皮下饱含芡汁，有灌汤之感。食时，皮骨易离，皮软滑，骨酥烂，老少咸宜。',
-      steps: [
-        '切好的凤爪过滚水焯过沥干。',
-        '高温浸炸过再漂冷。',
-        '加入五香料和卤水料焖煮再过冷河。',
-        '沾生粉入油锅再配酱蒸熟。',
-      ]
-    },
-    
+    }    
   ]
   
 }
+app.use(express.static('classifier'))
 app.use(bodyParser({uploadDir:'./uploads'}));
 app.listen(3000, function() {
   console.log('hhh')
@@ -92,12 +71,12 @@ app.post('/file', function(req, res) {
   res.end();
 })
 
-// var python = exec('python ' + fileName , function(err, stdout, stdin) {
-//   if (err) {
-//     console.log(err)
-//     return;
-//   }
-// })
+var python = exec('python ' + fileName , function(err, stdout, stdin) {
+  if (err) {
+    console.log(err)
+    return;
+  }
+})
 
 
 
@@ -105,13 +84,14 @@ app.post('/file', function(req, res) {
 app.post('/uploading', function(req, res){
   //生成multiparty对象，并配置上传目标路径
   var form = new multiparty.Form({uploadDir: './files/'});
-  from.maxFilesSize = 1024 * 1024 * 1024;
-  // python.stdout.on('data', function(data) {
-  //   console.log(data.toString());
-  //   res.write('hello, result is ' + data.toString() + '\n');
-  //   res.end();
-  //   python.stdout.removeAllListeners('data');
-  // })
+  form.maxFilesSize = 1024 * 1024 * 1024;
+  python.stdout.on('data', function(data) {
+    console.log(data.toString());
+    res.write(data.toString());
+    res.end();
+    python.stdout.removeAllListeners('data');
+  })
+
 
   //上传完成后处理
   form.parse(req, function(err, fields, files) {
@@ -122,15 +102,10 @@ app.post('/uploading', function(req, res){
     } else {
       var inputFile = files.file[0];
       var uploadedPath = inputFile.path;
-      // console.log(inputFile)
-      // res.write('hhhh');
-      // res.end('hhhhh');
       var dstPath = './files/food.jpg';
       //重命名为真实文件名
       fs.rename(uploadedPath, dstPath, function(err) {
-        console.log('successful')
-        res.end('asdasd');
-        // python.stdin.write('./files/food.jpg \n');
+        python.stdin.write('./files/food.jpg \n');
       });
 
     }
