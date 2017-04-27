@@ -105,7 +105,7 @@ app.post('/uploading', function(req, res){
       var dstPath = './files/food.jpg';
       //重命名为真实文件名
       fs.rename(uploadedPath, dstPath, function(err) {
-        python.stdin.write('./files/food.jpg \n');
+        python.stdin.write('./files/food.jpg\n');
       });
 
     }
